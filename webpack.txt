@@ -1,0 +1,7 @@
+Webpack: 
+1) bundle all files together
+2) transfrom javascript such as ES6 to ES5 (using bable)
+3) it is a build tool
+4) It manages your code 
+5) manages mostly javascript & styles, not limited to that
+6)  

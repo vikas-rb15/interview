@@ -1,0 +1,312 @@
+1) Tuples :
+	
+	employee:[number, string] = [1,"nova"];
+
+2) union types:
+	employeeID: number|string = 12345 or "12345"
+
+3) template strings: ${tableName}
+
+4) type guards:
+	function getPerson(n: number): Student | Professor {
+    		if (n === 1) {
+        		return new Student();
+    		} else {
+        		return new Professor();
+    		}
+	}
+	let person: Student | Professor = getPerson(1);
+	if (person instanceof Student) {
+    		person.study(); // OK
+	} else {
+    		// person.study(); // Error, person is of type Professor here.
+    		// so compiler recognizes we can call function teach()
+    		person.teach();
+	}
+5) type aliases:
+
+interface IStudent {
+    id: string;
+    age: number;
+}
+
+interface IWorker {
+    companyId: string;
+}
+
+type IStudentAlias = IStudent;
+
+type ICustomType = IStudent | IWorker;
+
+let s: IStudentAlias = {
+    id: 'ID3241',
+    age: 2
+};
+
+6) Decorators: @Decorators
+
+7) Intersection types : In TypeScript if one type is intersection of two other types consequently that type will have all properties from two intersected types:
+
+interface IStudent {
+    id: string;
+    age: number;
+}
+
+interface IWorker {
+    companyId: string;
+}
+
+type A = IStudent & IWorker;
+
+let x: A;
+
+x.age = 5;
+x.companyId = 'CID5241';
+x.id = 'ID3241';
+
+8) local type declarations
+declare module 'vuex-localstorage' {
+    interface PersistOptions {
+        namespace?: string;
+        initialState?: any;
+        provider?: any;
+        serialize?: (data: any) => string;
+        deserialize?: (str: string) => any;
+        expires?: number;
+        merge?: (args: any[]) => any;
+        reducer?: (state: any, paths: string[]) => any;
+        paths?: string[];
+    }
+
+    function createPersist(options: PersistOptions): any;
+
+    export = createPersist;
+}
+Don't forget to make sure that this declaration file gets included in tsconfig.json.
+	
+9)Local type declarations:
+	Local class, interface, enum, and type alias declarations can now appear inside function declarations.
+
+10)Stricter object literal assignment checks:
+	var x: { foo: number, [x: string]: any };
+	x = { foo: 1, baz: 2 };  // Ok, `baz` matched by index signature
+
+11)type Lazy<T> = T | (() => T);
+	type Lazy<T> = T | (() => T);
+	
+	var s: Lazy<string>;
+	s = "eager";
+	s = () => "lazy";
+
+12)Merging ambient class and interface declaration
+
+declare class Foo {
+    public x : number;
+}
+
+interface Foo {
+    y : string;
+}
+
+function bar(foo : Foo)  {
+    foo.x = 1; // OK, declared in the class Foo
+    foo.y = "1"; // OK, declared in the interface Foo
+}
+
+
+13)User-defined type guard functions
+
+function isCat(a: any): a is Cat {
+  return a.name === 'kitty';
+}
+
+var x: Cat | Dog;
+if(isCat(x)) {
+  x.meow(); // OK, x is Cat in this block
+}
+
+14)async/await 
+
+"use strict";
+
+// printDelayed is a 'Promise<void>'
+async function printDelayed(elements: string[]) {
+    for (const element of elements) {
+        await delay(200);
+        console.log(element);
+    }
+}
+
+async function delay(milliseconds: number) {
+    return new Promise<void>(resolve => {
+        setTimeout(resolve, milliseconds);
+    });
+}
+
+printDelayed(["Hello", "beautiful", "asynchronous", "world"]).then(() => {
+    console.log();
+    console.log("Printed every element!");
+});
+
+15)this-typing
+
+import calc from "./BasicCalculator";
+
+let v = new calc(2)
+    .multiply(5)
+    .add(1)
+    .currentValue();
+
+16)Tagged union types
+interface Square {
+    kind: "square";
+    size: number;
+}
+
+interface Rectangle {
+    kind: "rectangle";
+    width: number;
+    height: number;
+}
+
+interface Circle {
+    kind: "circle";
+    radius: number;
+}
+
+type Shape = Square | Rectangle | Circle;
+
+function area(s: Shape) {
+    // In the following switch statement, the type of s is narrowed in each case clause
+    // according to the value of the discriminant property, thus allowing the other properties
+    // of that variant to be accessed without a type assertion.
+    switch (s.kind) {
+        case "square": return s.size * s.size;
+        case "rectangle": return s.width * s.height;
+        case "circle": return Math.PI * s.radius * s.radius;
+    }
+}
+
+17)Type widening
+The null and undefined types are not widened to any in strict null checking mode.
+--strictNullChecks
+
+18)The never type
+// Function returning never must have unreachable end point
+function error(message: string): never {
+    throw new Error(message);
+}
+
+// Inferred return type is never
+function fail() {
+    return error("Something failed");
+}
+
+// Function returning never must have unreachable end point
+function infiniteLoop(): never {
+    while (true) {
+    }
+}
+
+// Inferred return type is number
+function move2(direction: "up" | "down") {
+    return direction === "up" ? 1 :
+        direction === "down" ? -1 :
+        error("Should never get here");
+}
+
+19)Read-only properties and index signatures
+interface Point {
+    readonly x: number;
+    readonly y: number;
+}
+
+var p1: Point = { x: 10, y: 20 };
+p1.x = 5;  // Error, p1.x is read-only
+
+let a: Array<number> = [0, 1, 2, 3, 4];
+let b: ReadonlyArray<number> = a;
+
+20)Specifying the type of this for functions
+class Handler {
+    info: string;
+    onClickBad(this: Handler, e: Event) {
+        // oops, used this here. using this callback would crash at runtime
+        this.info = e.message;
+    };
+}
+let h = new Handler();
+uiElement.addClickListener(h.onClickBad); // error!
+--noImplicitThis
+
+21)Optional class properties
+When compiled in --strictNullChecks mode, optional properties and methods automatically have undefined included in their type.
+
+22)Private and Protected Constructors
+class Singleton {
+    private static instance: Singleton;
+
+    private constructor() { }
+
+    static getInstance() {
+        if (!Singleton.instance) {
+            Singleton.instance = new Singleton();
+        }
+        return Singleton.instance;
+    }
+}
+
+let e = new Singleton(); // Error: constructor of 'Singleton' is private.
+let v = Singleton.getInstance();
+
+23)Abstract properties and accessors
+An abstract class can declare abstract properties and/or accessors. Any sub class will need to declare the abstract properties or be marked as abstract. Abstract properties cannot have an initializer. Abstract accessors cannot have bodies.
+
+Example
+abstract class Base {
+    abstract name: string;
+    abstract get value();
+    abstract set value(v: number);
+}
+
+24)Generic
+	
+	function identity<T>(arg: T): T {
+    		return arg;
+	}
+
+Generic Types:	
+	let myIdentity: <T>(arg: T) => T = identity;
+
+Generic Interface:
+	interface GenericIdentityFn<T> {
+    		(arg: T): T;
+	}
+
+	function identity<T>(arg: T): T {
+    		return arg;
+	}
+
+	let myIdentity: GenericIdentityFn<number> = identity;
+
+Generic Classes:
+	class GenericNumber<T> {
+    		zeroValue: T;
+    		add: (x: T, y: T) => T;
+	}
+
+	let myGenericNumber = new GenericNumber<number>();
+	myGenericNumber.zeroValue = 0;
+	myGenericNumber.add = function(x, y) { return x + y; };
+
+Using Type Parameters in Generic Constraints:
+	function getProperty<T, K extends keyof T>(obj: T, key: K) {
+    		return obj[key];
+	}
+
+	let x = { a: 1, b: 2, c: 3, d: 4 };
+
+	getProperty(x, "a"); // okay
+___________________________________________________________________________________
+
+tsconfig.json
